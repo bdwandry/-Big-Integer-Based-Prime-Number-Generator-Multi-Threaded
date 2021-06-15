@@ -2,6 +2,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 class MultithreadCalculate extends Thread {
     BigInteger PrimeNumCalculate = new BigInteger("-1");
@@ -28,6 +30,7 @@ class MultithreadCalculate extends Thread {
             boolean isPrime = true;
             BigInteger staticNumChecker = new BigInteger("2");
             int compare = -1;
+            long startTime = System.nanoTime();
             while (compare != 0 ) {
                 compare = staticNumChecker.compareTo(getPrimeNumCalculate());
 
@@ -48,8 +51,10 @@ class MultithreadCalculate extends Thread {
                 MultiThreadedBigIntegerBasedPrimeNumberGenerator.primeArray[0][getIndexNum().intValue()] = getPrimeNumCalculate();
                 MultiThreadedBigIntegerBasedPrimeNumberGenerator.primeArray[1][getIndexNum().intValue()] = BigInteger.valueOf(1);
             }
-
-            System.out.println("Thread " + Thread.currentThread().getId() + "; Index: " + getIndexNum() + "; Number: " + getPrimeNumCalculate() + "; isPrime: " + isPrime);
+            long endTime = System.nanoTime();
+            long timeElapsed = endTime - startTime;
+            MultiThreadedBigIntegerBasedPrimeNumberGenerator.timeArray[getIndexNum().intValue()] = (timeElapsed/1000000);
+            System.out.println("Thread " + Thread.currentThread().getId() + "; Index: " + getIndexNum() + "; Number: " + getPrimeNumCalculate() + "; isPrime: " + isPrime + "; Time To Calculate: " + (timeElapsed/1000000) + " ms");
         }
         catch (Exception e) {
             System.out.println("Exception is caught");
@@ -59,7 +64,8 @@ class MultithreadCalculate extends Thread {
 
 public class MultiThreadedBigIntegerBasedPrimeNumberGenerator {
     static public BigInteger primeBase = new BigInteger("1");
-    static public BigInteger [][] primeArray;
+    static public BigInteger[][] primeArray;
+    public static long [] timeArray;
     static public BigInteger totalPrimeCounter = new BigInteger("0");
     static public BigInteger mod2 = new BigInteger("2");
     static public BigInteger mod0 = new BigInteger("0");
@@ -75,11 +81,16 @@ public class MultiThreadedBigIntegerBasedPrimeNumberGenerator {
         for (int i = 0; i < cores; i++) {
             primeArray[1][i] = BigInteger.valueOf(-1);
         }
+
+        for (int i = 0; i < cores; i++) {
+            timeArray[i] = -1;
+        }
     }
 
     private static void CalculatePrimeNumberInBatches() {
         while (true) {
             primeArray = new BigInteger[2][cores];
+            timeArray = new long[cores];
             fillArray();
             for (int i = 0; i < cores; i++) {
                 MultithreadCalculate multithreadCalculate = new MultithreadCalculate();
@@ -112,7 +123,7 @@ public class MultiThreadedBigIntegerBasedPrimeNumberGenerator {
         for (int i = 0; i < cores; i++) {
             if (primeArray[1][i].equals(BigInteger.valueOf(1))) {
                 totalPrimeCounter = totalPrimeCounter.add(BigInteger.valueOf(1));
-                out.println(totalPrimeCounter + ". Prime Number: " + primeArray[0][i]);
+                out.println(totalPrimeCounter + ". Time to calculate: " + timeArray[i] + "; Prime Number: " + primeArray[0][i]);
             }
         }
 
@@ -120,10 +131,67 @@ public class MultiThreadedBigIntegerBasedPrimeNumberGenerator {
     }
 
     public static void main(String[] args) throws FileNotFoundException {
-        file = new File(System.getProperty("user.home") + "/Desktop" + "/PrimeNumber.txt");
-        out = new PrintWriter(file);
         cores = Runtime.getRuntime().availableProcessors();
+        file = new File(System.getProperty("user.home") + "/Desktop" + "/PrimeNumber.txt");
+        if (file.isFile()) {
+            if (file.length() != 0) {
+                System.out.print("File Already Exit. Would you like to continue? <Yes> or <No>: ");
+                Scanner in = new Scanner(System.in);
+                String flag = in.nextLine();
 
+                while (!(flag.equalsIgnoreCase("Yes") || flag.equalsIgnoreCase("No"))) {
+                    System.out.println("INVALID ANSWER. TYPE YES OR NO!");
+                    System.out.print("Enter 'Yes' or 'No': ");
+                    flag = in.nextLine();
+                }
+
+                if (flag.equalsIgnoreCase("Yes")) {
+                    ArrayList<String> tempArr = new ArrayList<>();
+                    Scanner lastLine = new Scanner(file);
+                    while (lastLine.hasNextLine()) {
+                        String specificLine = lastLine.nextLine();
+                        tempArr.add(specificLine);
+                    }
+
+                    out = new PrintWriter(file);
+                    for (int i = 0; i < tempArr.size(); i++) {
+                        out.println(tempArr.get(i));
+                        out.flush();
+                    }
+                    String[] splitString = tempArr.get(tempArr.size() - 1).split(" ");
+                    totalPrimeCounter = new BigInteger(splitString[0].substring(0, splitString[0].length() - 1));
+                    primeBase = new BigInteger(splitString[7]);
+
+                } else {
+                    out = new PrintWriter(file);
+
+                    long startTime = System.nanoTime();
+                    long endTime = System.nanoTime();
+                    long timeElapsed = endTime - startTime;
+                    totalPrimeCounter = totalPrimeCounter.add(BigInteger.valueOf(1));
+                    out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + primeBase);
+                    out.flush();
+                }
+            } else {
+                out = new PrintWriter(file);
+
+                long startTime = System.nanoTime();
+                long endTime = System.nanoTime();
+                long timeElapsed = endTime - startTime;
+                totalPrimeCounter = totalPrimeCounter.add(BigInteger.valueOf(1));
+                out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + primeBase);
+                out.flush();
+            }
+        } else {
+            out = new PrintWriter(file);
+
+            long startTime = System.nanoTime();
+            long endTime = System.nanoTime();
+            long timeElapsed = endTime - startTime;
+            totalPrimeCounter = totalPrimeCounter.add(BigInteger.valueOf(1));
+            out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + primeBase);
+            out.flush();
+        }
         CalculatePrimeNumberInBatches();
     }
 }
