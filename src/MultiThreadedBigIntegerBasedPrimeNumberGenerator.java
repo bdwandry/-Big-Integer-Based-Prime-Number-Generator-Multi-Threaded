@@ -169,7 +169,7 @@ public class MultiThreadedBigIntegerBasedPrimeNumberGenerator {
                     long endTime = System.nanoTime();
                     long timeElapsed = endTime - startTime;
                     totalPrimeCounter = totalPrimeCounter.add(BigInteger.valueOf(1));
-                    out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + primeBase);
+                    out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + 2);
                     out.flush();
                 }
             } else {
@@ -179,7 +179,7 @@ public class MultiThreadedBigIntegerBasedPrimeNumberGenerator {
                 long endTime = System.nanoTime();
                 long timeElapsed = endTime - startTime;
                 totalPrimeCounter = totalPrimeCounter.add(BigInteger.valueOf(1));
-                out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + primeBase);
+                out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + 2);
                 out.flush();
             }
         } else {
@@ -189,7 +189,7 @@ public class MultiThreadedBigIntegerBasedPrimeNumberGenerator {
             long endTime = System.nanoTime();
             long timeElapsed = endTime - startTime;
             totalPrimeCounter = totalPrimeCounter.add(BigInteger.valueOf(1));
-            out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + primeBase);
+            out.println(totalPrimeCounter + ". Time To Calculate: " + (timeElapsed / 1000000) + " ms; Prime Number: " + 2);
             out.flush();
         }
         CalculatePrimeNumberInBatches();
